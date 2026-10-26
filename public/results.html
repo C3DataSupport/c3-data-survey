@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Survey Results | C3 Data</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <img src="/c3-logo.png" alt="C3 Data Logo">
+    <p class="tagline">Calibrate Capture Comply</p>
+  </header>
+  <div class="container">
+    <h1>Overall Survey Results</h1>
+    <button class="refresh-btn" id="refresh">Refresh Results</button>
+    <div id="results-content">Loading...</div>
+    <p style="margin-top:2rem;"><a href="/">Back to Survey</a> | <a href="/admin.html">Owner Admin</a></p>
+  </div>
+  <script>
+    async function loadResults() {
+      const el = document.getElementById('results-content');
+      el.textContent = 'Loading...';
+      try {
+        const res = await fetch('/api/results');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed');
+        let html = `<p><strong>Total submissions:</strong> ${data.totalSubmissions}</p>`;
+        for (const key of ['question1', 'question2']) {
+          const q = data[key];
+          html += `<h2>${q.title}</h2><table class="results-table"><thead><tr><th>Rank</th><th>Option</th><th>Total Points</th><th>Avg Rank</th><th>1st Place Votes</th></tr></thead><tbody>`;
+          for (const r of q.results) {
+            html += `<tr><td>${r.overallRank}</td><td>${q.options[r.optionIndex]}</td><td>${r.points}</td><td>${r.avgRank}</td><td>${r.firstPlace}</td></tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        el.innerHTML = html;
+      } catch (err) {
+        el.innerHTML = '<div class="message error">Failed to load results. Please try again.</div>';
+      }
+    }
+    document.getElementById('refresh').addEventListener('click', loadResults);
+    loadResults();
+    // Auto refresh every 30s
+    setInterval(loadResults, 30000);
+  </script>
+</body>
+</html>

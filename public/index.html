@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help Shape the Future of ERP Compliance | C3 Data</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+  <header>
+    <img src="/c3-logo.png" alt="C3 Data Logo">
+    <p class="tagline">Calibrate Capture Comply</p>
+  </header>
+  <div class="container">
+    <h1>Help Shape the Future of ERP Compliance</h1>
+    <div class="intro">
+      <p>C3 Data continues to advance compliance as the industry evolves. We’re partnering with the ERP systems our customers rely on to bring compliance information directly into everyday workflows. Your input will help guide how that information appears—and what happens when a furnace is non-compliant.</p>
+    </div>
+    <p class="instructions">Rank the five options in each question from Best (1) to Worst (5). Use each rank once per question.</p>
+
+    <form id="survey-form">
+      <!-- Question 1 -->
+      <div class="question">
+        <h2>How should compliance status appear in your ERP?</h2>
+        <ul class="rank-list" id="q1-list" data-question="1">
+          <li class="rank-item" data-option="1"><span class="rank-number">1</span><span class="rank-text">Small pop-up window showing either Compliant or Non-Compliant.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="2"><span class="rank-number">2</span><span class="rank-text">Large pop-up window with details explaining why a furnace is Compliant or Non-Compliant.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="3"><span class="rank-number">3</span><span class="rank-text">Flashing indicator or light: green for Compliant and red for Non-Compliant.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="4"><span class="rank-number">4</span><span class="rank-text">Customizable combination of the first three options.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="5"><span class="rank-number">5</span><span class="rank-text">None of the above.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+        </ul>
+        <label for="q1-feedback">Other / Feedback (optional)</label>
+        <textarea id="q1-feedback" class="feedback" maxlength="2000" placeholder="Optional comments..."></textarea>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="question">
+        <h2>Rank your preferred ERP response before a recipe begins.</h2>
+        <ul class="rank-list" id="q2-list" data-question="2">
+          <li class="rank-item" data-option="1"><span class="rank-number">1</span><span class="rank-text">Simple acknowledgment pop-up before starting a recipe, whether the furnace is Compliant or Non-Compliant.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="2"><span class="rank-number">2</span><span class="rank-text">Warning pop-up requiring a supervisor’s override when the furnace is Non-Compliant.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="3"><span class="rank-number">3</span><span class="rank-text">Full furnace lockout until compliance has been restored.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="4"><span class="rank-number">4</span><span class="rank-text">Customizable combination of the first three options.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+          <li class="rank-item" data-option="5"><span class="rank-number">5</span><span class="rank-text">None of the above.</span><div class="rank-controls"><button type="button" aria-label="Move up">↑</button><button type="button" aria-label="Move down">↓</button></div></li>
+        </ul>
+        <label for="q2-feedback">Other / Feedback (optional)</label>
+        <textarea id="q2-feedback" class="feedback" maxlength="2000" placeholder="Optional comments..."></textarea>
+      </div>
+
+      <div id="message" class="message" style="display:none;"></div>
+      <button type="submit" class="primary" id="submit-btn">Submit Survey</button>
+    </form>
+
+    <p style="text-align:center; margin-top:2rem;"><a href="/results.html">View Overall Results</a></p>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

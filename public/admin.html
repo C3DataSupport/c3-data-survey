@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | C3 Data Survey</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header>
+    <img src="/c3-logo.png" alt="C3 Data Logo">
+    <p class="tagline">Calibrate Capture Comply</p>
+  </header>
+  <div class="container">
+    <h1>Survey Admin (Owner Only)</h1>
+    <div id="login">
+      <label for="password">Admin Password:</label><br>
+      <input type="password" id="password" style="padding:0.5rem; width:100%; max-width:300px; margin:0.5rem 0;">
+      <button class="primary" id="login-btn" style="max-width:200px;">Access</button>
+      <div id="login-msg" class="message error" style="display:none;"></div>
+    </div>
+    <div id="admin-content" style="display:none;">
+      <button class="refresh-btn" id="load-btn">Load Submissions</button>
+      <button class="refresh-btn" id="export-btn">Export CSV</button>
+      <div id="subs"></div>
+    </div>
+  </div>
+  <script>
+    let token = localStorage.getItem('adminToken') || '';
+    const loginDiv = document.getElementById('login');
+    const contentDiv = document.getElementById('admin-content');
+
+    function showContent() {
+      loginDiv.style.display = 'none';
+      contentDiv.style.display = 'block';
+    }
+    if (token) showContent();
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const pw = document.getElementById('password').value;
+      const msg = document.getElementById('login-msg');
+      try {
+        const res = await fetch('/api/admin/submissions', {
+          headers: { Authorization: 'Bearer ' + pw }
+        });
+        if (res.ok) {
+          token = pw;
+          localStorage.setItem('adminToken', token);
+          showContent();
+          loadSubs();
+        } else {
+          msg.textContent = 'Invalid password';
+          msg.style.display = 'block';
+        }
+      } catch {
+        msg.textContent = 'Error';
+        msg.style.display = 'block';
+      }
+    });
+
+    async function loadSubs() {
+      const el = document.getElementById('subs');
+      el.innerHTML = 'Loading...';
+      try {
+        const res = await fetch('/api/admin/submissions', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error();
+        const rows = await res.json();
+        let html = `<p>${rows.length} submissions</p><table class="results-table"><thead><tr><th>ID</th><th>Date</th><th>Q1 Ranks</th><th>Q1 Comment</th><th>Q2 Ranks</th><th>Q2 Comment</th></tr></thead><tbody>`;
+        for (const r of rows) {
+          html += `<tr><td>${r.id}</td><td>${r.created_at}</td><td>${r.q1_ranks.join(', ')}</td><td>${(r.q1_comment||'').slice(0,100)}</td><td>${r.q2_ranks.join(', ')}</td><td>${(r.q2_comment||'').slice(0,100)}</td></tr>`;
+        }
+        html += '</tbody></table>';
+        el.innerHTML = html;
+      } catch {
+        el.innerHTML = '<div class="message error">Failed to load. Check password.</div>';
+      }
+    }
+
+    document.getElementById('load-btn').addEventListener('click', loadSubs);
+    document.getElementById('export-btn').addEventListener('click', () => {
+      window.location.href = '/api/admin/export.csv?token=' + encodeURIComponent(token); // Note: better use header, but for download use fetch blob
+      // Proper way:
+      fetch('/api/admin/export.csv', { headers: { Authorization: 'Bearer ' + token } })
+        .then(r => r.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'c3-survey-export.csv';
+          a.click();
+          URL.revokeObjectURL(url);
+        });
+    });
+
+    if (token) loadSubs();
+  </script>
+</body>
+</html>
