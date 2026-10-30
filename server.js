@@ -124,6 +124,7 @@ const server = http.createServer((req, res) => {
   }
 
   if (pathname === '/api/results' && req.method === 'GET') {
+    if (!checkAdmin(req)) return sendJSON(res, 401, { error: 'Unauthorized' });
     try {
       const rows = loadData();
       const total = rows.length;
