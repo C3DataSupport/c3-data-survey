@@ -9,20 +9,65 @@
 <body>
   <header>
     <img src="/c3-logo.png" alt="C3 Data Logo">
-    <p class="tagline">Pyrometry in the Palm of Your Hand®</p>
+    <p class="tagline">Calibrate Capture Comply</p>
   </header>
   <div class="container">
-    <h1>Overall Survey Results</h1>
-    <button class="refresh-btn" id="refresh">Refresh Results</button>
-    <div id="results-content">Loading...</div>
-    <p style="margin-top:2rem;"><a href="/">Back to Survey</a> | <a href="/admin.html">Owner Admin</a></p>
+    <h1>Overall Survey Results (Admin Only)</h1>
+
+    <div id="login">
+      <label for="password">Admin Password:</label><br>
+      <input type="password" id="password" style="padding:0.5rem; width:100%; max-width:300px; margin:0.5rem 0;">
+      <button class="primary" id="login-btn" style="max-width:200px;">Access Results</button>
+      <div id="login-msg" class="message error" style="display:none;"></div>
+    </div>
+
+    <div id="results-wrapper" style="display:none;">
+      <button class="refresh-btn" id="refresh">Refresh Results</button>
+      <div id="results-content">Loading...</div>
+      <p style="margin-top:2rem;"><a href="/">Back to Survey</a> | <a href="/admin.html">Owner Admin</a></p>
+    </div>
   </div>
   <script>
+    let token = localStorage.getItem('adminToken') || '';
+    const loginDiv = document.getElementById('login');
+    const resultsWrapper = document.getElementById('results-wrapper');
+
+    function showResults() {
+      loginDiv.style.display = 'none';
+      resultsWrapper.style.display = 'block';
+      loadResults();
+    }
+
+    if (token) showResults();
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const pw = document.getElementById('password').value;
+      const msg = document.getElementById('login-msg');
+      try {
+        const res = await fetch('/api/results', {
+          headers: { Authorization: 'Bearer ' + pw }
+        });
+        if (res.ok) {
+          token = pw;
+          localStorage.setItem('adminToken', token);
+          showResults();
+        } else {
+          msg.textContent = 'Invalid password';
+          msg.style.display = 'block';
+        }
+      } catch {
+        msg.textContent = 'Error connecting';
+        msg.style.display = 'block';
+      }
+    });
+
     async function loadResults() {
       const el = document.getElementById('results-content');
       el.textContent = 'Loading...';
       try {
-        const res = await fetch('/api/results');
+        const res = await fetch('/api/results', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed');
         let html = `<p><strong>Total submissions:</strong> ${data.totalSubmissions}</p>`;
@@ -36,13 +81,11 @@
         }
         el.innerHTML = html;
       } catch (err) {
-        el.innerHTML = '<div class="message error">Failed to load results. Please try again.</div>';
+        el.innerHTML = '<div class="message error">Failed to load results. Check password or try again.</div>';
       }
     }
+
     document.getElementById('refresh').addEventListener('click', loadResults);
-    loadResults();
-    // Auto refresh every 30s
-    setInterval(loadResults, 30000);
   </script>
 </body>
 </html>
